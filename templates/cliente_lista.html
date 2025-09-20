@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Clientes - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Clientes Cadastrados</h1>
+
+    <a href="/clientes/novo">Adicionar Novo Cliente</a>
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Razão Social</th>
+                <th>Nome Fantasia</th>
+                <th>CNPJ/CPF</th>
+                <th>Telefone</th>
+                <th>E-mail</th>
+                <th>Data Cadastro</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.id }}</td>
+                <td>{{ cliente.razao_social }}</td>
+                <td>{{ cliente.nome_fantasia }}</td>
+                <td>{{ cliente.cnpj_cpf }}</td>
+                <td>{{ cliente.telefone }}</td>
+                <td>{{ cliente.email }}</td>
+                <td>{{ cliente.data_cadastro }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="/">Voltar para o Início</a>
+</body>
+</html>

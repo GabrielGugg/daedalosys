@@ -174,6 +174,12 @@ def novo_cliente():
     # Se o método for GET, renderizar a página do formulário
     return render_template('cadastro_cliente.html')
 
+# Rota para exibir a lista de clientes
+@app.route('/clientes/lista')
+def lista_clientes():
+    clientes = Cliente.query.order_by(Cliente.razao_social).all()
+    return render_template('cliente_lista.html', clientes=clientes)
+
 # --- Criação do Banco de Dados ---
 with app.app_context():
     db.create_all()
