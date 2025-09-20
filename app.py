@@ -128,6 +128,52 @@ class Custo(db.Model):
 def index():
     return render_template('index.html')
 
+# Rota para exibir o formulário de cadastro de cliente e processar os dados
+@app.route('/clientes/novo', methods=['GET', 'POST'])
+def novo_cliente():
+    if request.method == 'POST':
+        # Pegar os dados do formulário
+        razao_social = request.form['razao_social']
+        nome_fantasia = request.form['nome_fantasia']
+        cnpj_cpf = request.form['cnpj_cpf']
+        inscricao_estadual = request.form['inscricao_estadual']
+        telefone = request.form['telefone']
+        email = request.form['email']
+        logradouro = request.form['logradouro']
+        numero = request.form['numero']
+        bairro = request.form['bairro']
+        cidade = request.form['cidade']
+        uf = request.form['uf']
+        responsavel = request.form['responsavel']
+        fornecedor = 'fornecedor' in request.form # Retorna True ou False se a caixa estiver marcada
+
+        # Criar um novo objeto Cliente com os dados
+        novo_cliente_db = Cliente(
+            razao_social=razao_social,
+            nome_fantasia=nome_fantasia,
+            cnpj_cpf=cnpj_cpf,
+            inscricao_estadual=inscricao_estadual,
+            telefone=telefone,
+            email=email,
+            logradouro=logradouro,
+            numero=numero,
+            bairro=bairro,
+            cidade=cidade,
+            uf=uf,
+            responsavel=responsavel,
+            fornecedor=fornecedor
+        )
+
+        # Adicionar ao banco de dados e salvar
+        db.session.add(novo_cliente_db)
+        db.session.commit()
+
+        # Redirecionar para a página principal após o cadastro
+        return redirect(url_for('index'))
+
+    # Se o método for GET, renderizar a página do formulário
+    return render_template('cadastro_cliente.html')
+
 # --- Criação do Banco de Dados ---
 with app.app_context():
     db.create_all()
