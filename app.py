@@ -126,7 +126,7 @@ class Custo(db.Model):
 # Rota principal para exibir os chamados
 @app.route('/')
 def index():
-    return "Teste com novo banco de dados"
+    return render_template('index.html')
 
 # --- Criação do Banco de Dados ---
 with app.app_context():
