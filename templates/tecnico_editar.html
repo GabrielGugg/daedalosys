@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Técnico - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Editar Técnico</h1>
+
+    <form action="/tecnico/editar/{{ tecnico.id }}" method="POST">
+        <div>
+            <label for="nome">Nome Completo</label>
+            <input type="text" id="nome" name="nome" value="{{ tecnico.nome }}" required>
+        </div>
+        <div>
+            <label for="cpf">CPF</label>
+            <input type="text" id="cpf" name="cpf" value="{{ tecnico.cpf }}" required>
+        </div>
+        <div>
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" value="{{ tecnico.email }}" required>
+        </div>
+        <div>
+            <label for="cargo">Cargo:</label>
+            <select id="cargo" name="cargo">
+                <option value="Analista N1" {% if tecnico.cargo == 'Analista N1' %}selected{% endif %}>Analista N1</option>
+                <option value="Analista N2" {% if tecnico.cargo == 'Analista N2' %}selected{% endif %}>Analista N2</option>
+                <option value="Analista N3" {% if tecnico.cargo == 'Analista N3' %}selected{% endif %}>Analista N3</option>
+                <option value="Supervisor" {% if tecnico.cargo == 'Supervisor' %}selected{% endif %}>Supervisor</option>
+                <option value="Gerente" {% if tecnico.cargo == 'Gerente' %}selected{% endif %}>Gerente</option>
+            </select>
+        </div>
+        <button type="submit">Salvar Alterações</button>
+    </form>
+    <br>
+    <a href="/">Voltar para o Início</a>
+</body>
+</html>

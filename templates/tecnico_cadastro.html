@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Tecnico - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Novo Tecnico</h1>
+
+    <form action="/tecnico/novo" method="POST">
+        <div>
+            <label for="nome">Nome Completo</label>
+            <input type="text" id="nome" name="nome" required>
+        </div>
+        <div>
+            <label for="cpf">CPF</label>
+            <input type="text" id="cpf" name="cpf" required>
+        </div>
+        <div>
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="cargo">Cargo:</label>
+            <select id="cargo" name="cargo">
+                <option value="Analista N1">Analista N1</option>
+                <option value="Analista N2">Analista N2</option>
+                <option value="Analista N3">Analista N3</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Gerente">Gerente</option>
+            </select>
+        </div>
+        <button type="submit">Cadastrar Técnico</button>
+    </form>
+    <br>
+    <a href="/">Voltar para o Início</a>
+</body>
+</html>

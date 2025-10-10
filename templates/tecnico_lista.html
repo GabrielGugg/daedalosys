@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Tecnicos - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Tecnicos Cadastrados</h1>
+
+    <a href="/tecnico/novo">Adicionar Novo Tecnico</a>
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Cargo</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tecnico in tecnicos %}
+            <tr>
+                <td>{{ tecnico.id }}</td>
+                <td>{{ tecnico.nome }}</td>
+                <td>{{ tecnico.email }}</td>
+                <td>{{ tecnico.cargo }}</td>
+                <td>
+                    <a href="/tecnico/editar/{{ tecnico.id }}">Editar</a> |
+                    <a href="/tecnico/excluir/{{ tecnico.id }}">Excluir</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="/">Voltar para o Início</a>
+</body>
+</html>

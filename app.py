@@ -172,7 +172,7 @@ def novo_cliente():
         return redirect(url_for('index'))
 
     # Se o método for GET, renderizar a página do formulário
-    return render_template('cadastro_cliente.html')
+    return render_template('cliente_cadastro.html')
 
 # Rota para exibir a lista de clientes
 @app.route('/clientes/lista')
@@ -211,6 +211,64 @@ def excluir_cliente(id):
     db.session.delete(cliente)
     db.session.commit()
     return redirect(url_for('lista_clientes'))
+
+# Rota para cadastras novo Técnico
+@app.route('/tecnico/novo', methods=['GET', 'POST'])
+def novo_tecnico():
+    if request.method == 'POST':
+        # Pegar os dados do formulário
+        nome = request.form['nome']
+        cpf = request.form['cpf']
+        email = request.form['email']
+        cargo = request.form['cargo']
+
+        # Criar um novo objeto Tecnico com os dados
+        novo_tecnico_db = Tecnico(
+            nome=nome,
+            cpf=cpf,
+            email=email,
+            cargo=cargo
+        )
+
+        # Adicionar ao banco de dados e salvar
+        db.session.add(novo_tecnico_db)
+        db.session.commit()
+
+        # Redirecionar para a página principal após o cadastro
+        return redirect(url_for('index'))
+
+    # Se o método for GET, renderizar a página do formulário
+    return render_template('tecnico_cadastro.html')
+
+# Rota para exibir a lista de tecnicos
+@app.route('/tecnico/lista')
+def lista_tecnico():
+    tecnicos = Tecnico.query.order_by(Tecnico.id).all()
+    return render_template('tecnico_lista.html', tecnicos=tecnicos)
+
+# Rota para editar um técnico existente
+@app.route('/tecnico/editar/<int:id>', methods=['GET', 'POST'])
+def editar_tecnico(id):
+    tecnico = Tecnico.query.get_or_404(id)
+    if request.method == 'POST':
+        tecnico.nome = request.form['nome']
+        tecnico.nome = request.form['nome']
+        tecnico.cpf = request.form['cpf']
+        tecnico.email = request.form['email']
+        tecnico.cargo = request.form['cargo']
+        
+        db.session.commit()
+        return redirect(url_for('lista_tecnico'))
+    
+    return render_template('tecnico_editar.html', tecnico=tecnico)
+
+# Rota para excluir um tecnico
+@app.route('/tecnico/excluir/<int:id>', methods=['GET', 'POST'])
+def excluir_tecnico(id):
+    tecnico = Tecnico.query.get_or_404(id)
+    db.session.delete(tecnico)
+    db.session.commit()
+    return redirect(url_for('lista_tecnico'))
 
 # --- Criação do Banco de Dados ---
 with app.app_context():
