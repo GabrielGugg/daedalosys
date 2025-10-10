@@ -180,6 +180,38 @@ def lista_clientes():
     clientes = Cliente.query.order_by(Cliente.razao_social).all()
     return render_template('cliente_lista.html', clientes=clientes)
 
+# Rota para editar um cliente existente
+@app.route('/clientes/editar/<int:id>', methods=['GET', 'POST'])
+def editar_cliente(id):
+    cliente = Cliente.query.get_or_404(id)
+    if request.method == 'POST':
+        cliente.razao_social = request.form['razao_social']
+        cliente.nome_fantasia = request.form['nome_fantasia']
+        cliente.cnpj_cpf = request.form['cnpj_cpf']
+        cliente.inscricao_estadual = request.form['inscricao_estadual']
+        cliente.telefone = request.form['telefone']
+        cliente.email = request.form['email']
+        cliente.logradouro = request.form['logradouro']
+        cliente.numero = request.form['numero']
+        cliente.bairro = request.form['bairro']
+        cliente.cidade = request.form['cidade']
+        cliente.uf = request.form['uf']
+        cliente.responsavel = request.form['responsavel']
+        cliente.fornecedor = 'fornecedor' in request.form
+        
+        db.session.commit()
+        return redirect(url_for('lista_clientes'))
+    
+    return render_template('cliente_editar.html', cliente=cliente)
+
+# Rota para excluir um cliente
+@app.route('/clientes/excluir/<int:id>', methods=['GET', 'POST'])
+def excluir_cliente(id):
+    cliente = Cliente.query.get_or_404(id)
+    db.session.delete(cliente)
+    db.session.commit()
+    return redirect(url_for('lista_clientes'))
+
 # --- Criação do Banco de Dados ---
 with app.app_context():
     db.create_all()

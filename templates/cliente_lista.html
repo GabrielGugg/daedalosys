@@ -19,7 +19,7 @@
                 <th>CNPJ/CPF</th>
                 <th>Telefone</th>
                 <th>E-mail</th>
-                <th>Data Cadastro</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -31,7 +31,10 @@
                 <td>{{ cliente.cnpj_cpf }}</td>
                 <td>{{ cliente.telefone }}</td>
                 <td>{{ cliente.email }}</td>
-                <td>{{ cliente.data_cadastro }}</td>
+                <td>
+                    <a href="/clientes/editar/{{ cliente.id }}">Editar</a> |
+                    <a href="/clientes/excluir/{{ cliente.id }}">Excluir</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
