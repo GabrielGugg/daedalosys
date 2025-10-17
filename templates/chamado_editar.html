@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Chamado #{{ chamado.id }} - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Editar Chamado #{{ chamado.id }}</h1>
+    <h2>{{ chamado.titulo }}</h2>
+    <p>Aberto em: {{ chamado.data_abertura.strftime('%d/%m/%Y %H:%M') }}</p>
+
+    <form action="/chamados/editar/{{ chamado.id }}" method="POST">
+        <div>
+            <label for="id_cliente">Cliente:</label>
+            <select id="id_cliente" name="id_cliente" required>
+                {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}" 
+                            {% if cliente.id == chamado.id_cliente %}selected{% endif %}>
+                        {{ cliente.razao_social }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label for="id_tecnico">Técnico Responsável:</label>
+            <select id="id_tecnico" name="id_tecnico">
+                <option value="" {% if chamado.id_tecnico is none %}selected{% endif %}>Nenhum Técnico</option>
+                {% for tecnico in tecnicos %}
+                    <option value="{{ tecnico.id }}" 
+                            {% if tecnico.id == chamado.id_tecnico %}selected{% endif %}>
+                        {{ tecnico.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="titulo">Título do Chamado:</label>
+            <input type="text" id="titulo" name="titulo" value="{{ chamado.titulo }}" required>
+        </div>
+        <div>
+            <label for="descricao">Descrição Completa:</label>
+            <textarea id="descricao" name="descricao" rows="5" required>{{ chamado.descricao }}</textarea>
+        </div>
+
+        <div>
+            <label for="prioridade">Prioridade (1 - Alta, 5 - Baixa):</label>
+            <select id="prioridade" name="prioridade" required>
+                {% for p in prioridades %}
+                    <option value="{{ p }}" {% if p == chamado.prioridade %}selected{% endif %}>{{ p }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                {% for key, value in status_opcoes.items() %}
+                    <option value="{{ key }}" {% if key == chamado.status %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label for="tempo_gasto">Tempo Gasto (em horas - ex: 1.5):</label>
+            <input type="number" step="0.01" id="tempo_gasto" name="tempo_gasto" value="{{ chamado.tempo_gasto or 0.0 }}">
+        </div>
+
+
+        <button type="submit">Atualizar Chamado</button>
+    </form>
+    <br>
+    <a href="/chamados/lista">Voltar para a Lista</a>
+</body>
+</html>

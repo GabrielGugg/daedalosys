@@ -270,6 +270,145 @@ def excluir_tecnico(id):
     db.session.commit()
     return redirect(url_for('lista_tecnico'))
 
+# Rota para exibir o formulário de cadastro de chamado
+@app.route('/chamados/novo', methods=['GET', 'POST'])
+def novo_chamado():
+    if request.method == 'POST':
+        # 1. Obter dados do formulário
+        id_cliente = request.form['id_cliente']
+        id_tecnico = request.form.get('id_tecnico') # Usar .get() para permitir valor nulo
+        titulo = request.form['titulo']
+        descricao = request.form['descricao']
+        prioridade = request.form['prioridade']
+        status = request.form['status']
+        # Contrato é opcional, vamos ignorar por enquanto para simplificar o início
+
+        # 2. Criar novo objeto Chamado
+        novo_chamado_db = Chamado(
+            id_cliente=id_cliente,
+            id_tecnico=id_tecnico if id_tecnico else None, # Salva None se o campo vier vazio
+            titulo=titulo,
+            descricao=descricao,
+            prioridade=prioridade,
+            status=status,
+            # data_abertura é preenchida automaticamente
+        )
+
+        # 3. Adicionar e salvar
+        db.session.add(novo_chamado_db)
+        db.session.commit()
+
+        # 4. Redirecionar para a lista de chamados (que criaremos em seguida)
+        return redirect(url_for('lista_chamados')) 
+
+    # Se for GET, busca os dados necessários para o formulário
+    clientes = Cliente.query.order_by(Cliente.razao_social).all()
+    tecnicos = Tecnico.query.order_by(Tecnico.nome).all()
+    
+    # Valores fixos para campos de seleção
+    PRIORIDADES = [1, 2, 3, 4, 5] # 1 é a mais alta
+    STATUS_INICIAL = {
+        1: 'Aberto',
+        2: 'Em Andamento',
+        3: 'Aguardando Cliente'
+    }
+
+    return render_template('chamado_cadastro.html', 
+                           clientes=clientes, 
+                           tecnicos=tecnicos,
+                           prioridades=PRIORIDADES,
+                           status_opcoes=STATUS_INICIAL)
+
+# Rota para exibir a lista de chamados
+@app.route('/chamados/lista')
+def lista_chamados():
+    # Busca todos os chamados, ordenados do mais recente para o mais antigo
+    chamados = Chamado.query.order_by(Chamado.data_abertura.desc()).all()
+    
+    # Mapa para traduzir o código do status (int) para o texto
+    STATUS_MAP = {
+        1: 'Aberto',
+        2: 'Em Andamento',
+        3: 'Aguardando Cliente',
+        4: 'Fechado/Resolvido',
+        5: 'Cancelado'
+    }
+
+    return render_template('chamado_lista.html', 
+                           chamados=chamados,
+                           status_map=STATUS_MAP)
+
+# Rota para editar um chamado existente
+@app.route('/chamados/editar/<int:id>', methods=['GET', 'POST'])
+def editar_chamado(id):
+    chamado = Chamado.query.get_or_404(id)
+    clientes = Cliente.query.order_by(Cliente.razao_social).all()
+    tecnicos = Tecnico.query.order_by(Tecnico.nome).all()
+
+    # Opções para os campos de seleção
+    PRIORIDADES = [1, 2, 3, 4, 5]
+    STATUS_OPCOES = {
+        1: 'Aberto',
+        2: 'Em Andamento',
+        3: 'Aguardando Cliente',
+        4: 'Fechado/Resolvido',
+        5: 'Cancelado'
+    }
+
+    if request.method == 'POST':
+        # 1. Atualizar dados do chamado com os valores do formulário
+        chamado.id_cliente = request.form['id_cliente']
+        
+        # O campo id_tecnico pode vir vazio, então tratamos para salvar 'None'
+        id_tecnico = request.form.get('id_tecnico')
+        chamado.id_tecnico = id_tecnico if id_tecnico else None
+        
+        chamado.titulo = request.form['titulo']
+        chamado.descricao = request.form['descricao']
+        chamado.prioridade = request.form['prioridade']
+        
+        novo_status = int(request.form['status'])
+        
+        # Lógica para registrar o fechamento do chamado
+        if (chamado.status != 4 and novo_status == 4) or \
+           (chamado.status != 5 and novo_status == 5):
+            # Se o status anterior não era Fechado/Cancelado e o novo é, registra a data de fechamento
+            chamado.data_fechamento = datetime.utcnow()
+        elif novo_status < 4 and chamado.data_fechamento is not None:
+            # Se o status foi reaberto, limpamos a data de fechamento
+            chamado.data_fechamento = None
+            
+        chamado.status = novo_status
+        
+        # Tempo Gasto
+        tempo_gasto_str = request.form.get('tempo_gasto', '0.0') # Pega o valor ou usa '0.0' se for nulo
+        try:
+            chamado.tempo_gasto = float(tempo_gasto_str)
+        except ValueError:
+            # Caso o valor não seja um número (Tratamento de erro simples)
+            pass
+
+        # 2. Salvar as alterações
+        db.session.commit()
+        return redirect(url_for('lista_chamados'))
+
+    # Se for GET, renderizar o formulário de edição
+    return render_template('chamado_editar.html', 
+                           chamado=chamado, 
+                           clientes=clientes, 
+                           tecnicos=tecnicos,
+                           prioridades=PRIORIDADES,
+                           status_opcoes=STATUS_OPCOES)
+
+# Rota para excluir um chamado
+@app.route('/chamados/excluir/<int:id>', methods=['POST'])
+def excluir_chamado(id):
+    chamado = Chamado.query.get_or_404(id)
+    db.session.delete(chamado)
+    db.session.commit()
+    # Redireciona de volta para a lista de chamados
+    return redirect(url_for('lista_chamados'))
+
 # --- Criação do Banco de Dados ---
 with app.app_context():
     db.create_all()

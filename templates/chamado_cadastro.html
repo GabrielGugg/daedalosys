@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Abrir Novo Chamado - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Abrir Novo Chamado</h1>
+
+    <form action="/chamados/novo" method="POST">
+        <div>
+            <label for="id_cliente">Cliente:</label>
+            <select id="id_cliente" name="id_cliente" required>
+                <option value="" disabled selected>Selecione um Cliente</option>
+                {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.razao_social }} ({{ cliente.nome_fantasia }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label for="id_tecnico">Técnico Responsável (Opcional):</label>
+            <select id="id_tecnico" name="id_tecnico">
+                <option value="">Nenhum Técnico (Será atribuído)</option>
+                {% for tecnico in tecnicos %}
+                    <option value="{{ tecnico.id }}">{{ tecnico.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="titulo">Título do Chamado:</label>
+            <input type="text" id="titulo" name="titulo" required>
+        </div>
+        <div>
+            <label for="descricao">Descrição Completa:</label>
+            <textarea id="descricao" name="descricao" rows="5" required></textarea>
+        </div>
+
+        <div>
+            <label for="prioridade">Prioridade (1 - Alta, 5 - Baixa):</label>
+            <select id="prioridade" name="prioridade" required>
+                {% for p in prioridades %}
+                    <option value="{{ p }}">{{ p }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="status">Status Inicial:</label>
+            <select id="status" name="status" required>
+                {% for key, value in status_opcoes.items() %}
+                    <option value="{{ key }}">{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">Abrir Chamado</button>
+    </form>
+    <br>
+    <a href="/">Voltar para o Início</a>
+</body>
+</html>

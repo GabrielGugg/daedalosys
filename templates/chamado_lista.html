@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Chamados - DaedaloSYS</title>
+    <style>
+        .prioridade-1 { color: red; font-weight: bold; }
+        .prioridade-5 { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Chamados em Aberto/Andamento</h1>
+
+    <a href="/chamados/novo">Abrir Novo Chamado</a>
+    |
+    <a href="/">Voltar ao Início</a>
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Cliente</th>
+                <th>Técnico</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+                <th>Abertura</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chamado in chamados %}
+            <tr>
+                <td>{{ chamado.id }}</td>
+                <td>{{ chamado.titulo }}</td>
+                <td>{{ chamado.cliente.razao_social }}</td>
+                <td>
+                    {% if chamado.tecnico %}
+                        {{ chamado.tecnico.nome }}
+                    {% else %}
+                        Não Atribuído
+                    {% endif %}
+                </td>
+                <td class="prioridade-{{ chamado.prioridade }}">
+                    {{ chamado.prioridade }}
+                </td>
+                <td>{{ status_map[chamado.status] }}</td>
+                <td>{{ chamado.data_abertura.strftime('%d/%m/%Y %H:%M') }}</td>
+               <td>
+                    <a href="/chamados/editar/{{ chamado.id }}">Editar</a>
+                    
+                    <form action="/chamados/excluir/{{ chamado.id }}" method="POST" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir o chamado #{{ chamado.id }}?');">
+                            Excluir
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">Nenhum chamado registrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
