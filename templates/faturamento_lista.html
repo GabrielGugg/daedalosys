@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Faturamentos - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Faturamentos Registrados (Receita)</h1>
+
+    <a href="/financeiro/faturamentos/novo">Registrar Novo Faturamento</a>
+    |
+    <a href="/">Voltar ao Início</a>
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Valor (R$)</th>
+                <th>Emissão</th>
+                <th>Vencimento</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for faturamento in faturamentos %}
+            <tr>
+                <td>{{ faturamento.id }}</td>
+                <td>{{ faturamento.cliente.razao_social }}</td>
+                <td>R$ {{ "%.2f"|format(faturamento.valor_total|float) }}</td> 
+                <td>{{ faturamento.data_emissao.strftime('%d/%m/%Y') }}</td>
+                <td>{{ faturamento.data_vencimento.strftime('%d/%m/%Y') }}</td>
+                <td>{{ status_faturamento[faturamento.status] }}</td>
+                <td>
+                    <a href="/financeiro/faturamentos/editar/{{ faturamento.id }}">Editar</a>
+                    </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">Nenhum faturamento registrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

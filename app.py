@@ -306,7 +306,13 @@ def novo_chamado():
     tecnicos = Tecnico.query.order_by(Tecnico.nome).all()
     
     # Valores fixos para campos de seleção
-    PRIORIDADES = [1, 2, 3, 4, 5] # 1 é a mais alta
+    PRIORIDADES = {
+        1: 'Muito Alta',
+        2: 'Alta',
+        3: 'Média',
+        4: 'Baixa',
+        5: 'Muito Baixa'
+    }
     STATUS_INICIAL = {
         1: 'Aberto',
         2: 'Em Andamento',
@@ -346,7 +352,13 @@ def editar_chamado(id):
     tecnicos = Tecnico.query.order_by(Tecnico.nome).all()
 
     # Opções para os campos de seleção
-    PRIORIDADES = [1, 2, 3, 4, 5]
+    PRIORIDADES = {
+        1: 'Muito Alta',
+        2: 'Alta',
+        3: 'Média',
+        4: 'Baixa',
+        5: 'Muito Baixa'
+    }
     STATUS_OPCOES = {
         1: 'Aberto',
         2: 'Em Andamento',
@@ -408,6 +420,142 @@ def excluir_chamado(id):
     db.session.commit()
     # Redireciona de volta para a lista de chamados
     return redirect(url_for('lista_chamados'))
+
+# Rota para exibir o formulário de cadastro de custo e processar os dados
+@app.route('/financeiro/custos/novo', methods=['GET', 'POST'])
+def novo_custo():
+    # Busca clientes para a associação (custo pode ser de um cliente ou geral)
+    clientes = Cliente.query.order_by(Cliente.razao_social).all()
+    
+    # Opções para Tipo de Custo (baseado no campo 'tipo' int do seu diagrama)
+    TIPOS_CUSTO = {
+        1: 'Custo Operacional',
+        2: 'Custo com Cliente',
+        3: 'Despesa Fixa'
+    }
+
+    if request.method == 'POST':
+        # 1. Obter dados do formulário
+        id_cliente = request.form.get('id_cliente') # Pode ser None
+        descricao = request.form['descricao']
+        valor_str = request.form['valor'].replace(',', '.') # Substitui vírgula por ponto para conversão
+        tipo = request.form['tipo']
+        data_str = request.form['data']
+
+        # 2. Tratamento de Dados e Criação do Objeto
+        
+        # Converte a data string para objeto date
+        data_registro = datetime.strptime(data_str, '%Y-%m-%d').date()
+        
+        novo_custo_db = Custo(
+            id_cliente=id_cliente if id_cliente else None,
+            descricao=descricao,
+            # Converte o valor para float/Numeric
+            valor=float(valor_str),
+            tipo=int(tipo),
+            data=data_registro
+        )
+
+        # 3. Adicionar e salvar
+        db.session.add(novo_custo_db)
+        db.session.commit()
+
+        # 4. Redirecionar para a lista de custos
+        return redirect(url_for('lista_custos')) 
+
+    # Se for GET, renderizar o formulário
+    return render_template('custo_cadastro.html', 
+                           clientes=clientes, 
+                           tipos_custo=TIPOS_CUSTO)
+
+# Rota para exibir a lista de custos
+@app.route('/financeiro/custos/lista')
+def lista_custos():
+    custos = Custo.query.order_by(Custo.data.desc()).all()
+    
+    # Mapa para traduzir o código do tipo de custo
+    TIPOS_CUSTO = {
+        1: 'Operacional',
+        2: 'Com Cliente',
+        3: 'Despesa Fixa'
+    }
+
+    return render_template('custo_lista.html', 
+                           custos=custos, 
+                           tipos_custo=TIPOS_CUSTO)
+
+# Rota para exibir o formulário de cadastro de faturamento e processar os dados
+@app.route('/financeiro/faturamentos/novo', methods=['GET', 'POST'])
+def novo_faturamento():
+    # Busca dados para as chaves estrangeiras
+    clientes = Cliente.query.order_by(Cliente.razao_social).all()
+    contratos = Contrato.query.all() # Todos os contratos
+    orcamentos = Orcamento.query.all() # Todos os orçamentos
+    
+    # Opções para Status de Faturamento (baseado no campo 'status' int)
+    STATUS_FATURAMENTO = {
+        1: 'Aberto',
+        2: 'Emitido',
+        3: 'Pago',
+        4: 'Cancelado'
+    }
+
+    if request.method == 'POST':
+        # 1. Obter dados do formulário
+        id_cliente = request.form['id_cliente']
+        id_contrato = request.form.get('id_contrato')
+        id_orcamento = request.form.get('id_orcamento')
+        
+        data_emissao_str = request.form['data_emissao']
+        data_vencimento_str = request.form['data_vencimento']
+        valor_total_str = request.form['valor_total'].replace(',', '.')
+        status = request.form['status']
+
+        # 2. Tratamento de Dados e Criação do Objeto
+        
+        # Converte datas
+        data_emissao = datetime.strptime(data_emissao_str, '%Y-%m-%d').date()
+        data_vencimento = datetime.strptime(data_vencimento_str, '%Y-%m-%d').date()
+        
+        novo_faturamento_db = Faturamento(
+            id_cliente=id_cliente,
+            id_contrato=id_contrato if id_contrato else None,
+            id_orcamento=id_orcamento if id_orcamento else None,
+            data_emissao=data_emissao,
+            data_vencimento=data_vencimento,
+            valor_total=float(valor_total_str),
+            status=int(status)
+        )
+
+        # 3. Adicionar e salvar
+        db.session.add(novo_faturamento_db)
+        db.session.commit()
+
+        # 4. Redirecionar para a lista de faturamentos
+        return redirect(url_for('lista_faturamentos')) 
+
+    # Se for GET, renderizar o formulário
+    return render_template('faturamento_cadastro.html', 
+                           clientes=clientes, 
+                           contratos=contratos,
+                           orcamentos=orcamentos,
+                           status_faturamento=STATUS_FATURAMENTO)
+
+# Rota para exibir a lista de faturamentos
+@app.route('/financeiro/faturamentos/lista')
+def lista_faturamentos():
+    faturamentos = Faturamento.query.order_by(Faturamento.data_emissao.desc()).all()
+    
+    STATUS_FATURAMENTO = {
+        1: 'Aberto',
+        2: 'Emitido',
+        3: 'Pago',
+        4: 'Cancelado'
+    }
+
+    return render_template('faturamento_lista.html', 
+                           faturamentos=faturamentos, 
+                           status_faturamento=STATUS_FATURAMENTO)
 
 # --- Criação do Banco de Dados ---
 with app.app_context():

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Novo Faturamento - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Registrar Novo Faturamento (Receita)</h1>
+
+    <form action="/financeiro/faturamentos/novo" method="POST">
+        <div>
+            <label for="id_cliente">Cliente:</label>
+            <select id="id_cliente" name="id_cliente" required>
+                <option value="" disabled selected>Selecione o Cliente</option>
+                {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.razao_social }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="valor_total">Valor (R$):</label>
+            <input type="text" id="valor_total" name="valor_total" placeholder="Ex: 1500.00" required>
+        </div>
+        
+        <div>
+            <label for="data_emissao">Data de Emissão:</label>
+            <input type="date" id="data_emissao" name="data_emissao" required>
+        </div>
+        <div>
+            <label for="data_vencimento">Data de Vencimento:</label>
+            <input type="date" id="data_vencimento" name="data_vencimento" required>
+        </div>
+
+        <div>
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="" disabled selected>Selecione o Status</option>
+                {% for key, value in status_faturamento.items() %}
+                    <option value="{{ key }}">{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <h3>Relacionamentos (Opcional)</h3>
+        <div>
+            <label for="id_contrato">Contrato Associado:</label>
+            <select id="id_contrato" name="id_contrato">
+                <option value="">Nenhum</option>
+                {% for contrato in contratos %}
+                    <option value="{{ contrato.id }}">Contrato #{{ contrato.id }} - Cliente: {{ contrato.cliente.razao_social }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="id_orcamento">Orçamento Associado:</label>
+            <select id="id_orcamento" name="id_orcamento">
+                <option value="">Nenhum</option>
+                {% for orcamento in orcamentos %}
+                    <option value="{{ orcamento.id }}">Orçamento #{{ orcamento.id }} - Cliente: {{ orcamento.cliente.razao_social }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">Registrar Faturamento</button>
+    </form>
+    <br>
+    <a href="/">Voltar para o Início</a>
+</body>
+</html>

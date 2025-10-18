@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Novo Custo - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Registrar Novo Custo</h1>
+
+    <form action="/financeiro/custos/novo" method="POST">
+        <div>
+            <label for="data">Data do Custo:</label>
+            <input type="date" id="data" name="data" required>
+        </div>
+        
+        <div>
+            <label for="descricao">Descrição do Custo:</label>
+            <input type="text" id="descricao" name="descricao" required>
+        </div>
+        
+        <div>
+            <label for="valor">Valor (R$):</label>
+            <input type="text" id="valor" name="valor" placeholder="Ex: 150.50" required>
+        </div>
+
+        <div>
+            <label for="tipo">Tipo de Custo:</label>
+            <select id="tipo" name="tipo" required>
+                <option value="" disabled selected>Selecione o Tipo</option>
+                {% for key, value in tipos_custo.items() %}
+                    <option value="{{ key }}">{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="id_cliente">Associar a Cliente (Opcional):</label>
+            <select id="id_cliente" name="id_cliente">
+                <option value="">Custo Geral / Não Associado</option>
+                {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.razao_social }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit">Registrar Custo</button>
+    </form>
+    <br>
+    <a href="/">Voltar para o Início</a>
+</body>
+</html>

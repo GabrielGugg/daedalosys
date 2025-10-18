@@ -36,12 +36,12 @@
             <label for="descricao">Descrição Completa:</label>
             <textarea id="descricao" name="descricao" rows="5" required></textarea>
         </div>
-
         <div>
-            <label for="prioridade">Prioridade (1 - Alta, 5 - Baixa):</label>
+            <label for="prioridade">Prioridade:</label>
             <select id="prioridade" name="prioridade" required>
-                {% for p in prioridades %}
-                    <option value="{{ p }}">{{ p }}</option>
+                <option value="" disabled selected>Selecione a Prioridade</option> 
+                {% for key, value in prioridades.items() %}
+                    <option value="{{ key }}">{{ value }}</option>
                 {% endfor %}
             </select>
         </div>

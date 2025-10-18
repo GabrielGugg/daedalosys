@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Custos - DaedaloSYS</title>
+</head>
+<body>
+    <h1>Custos Registrados</h1>
+
+    <a href="/financeiro/custos/novo">Registrar Novo Custo</a>
+    |
+    <a href="/">Voltar ao Início</a>
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Valor (R$)</th>
+                <th>Tipo</th>
+                <th>Associado a Cliente</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for custo in custos %}
+            <tr>
+                <td>{{ custo.id }}</td>
+                <td>{{ custo.data.strftime('%d/%m/%Y') }}</td>
+                <td>{{ custo.descricao }}</td>
+                <td>R$ {{ "%.2f"|format(custo.valor|float) }}</td> 
+                <td>{{ tipos_custo[custo.tipo] }}</td>
+                <td>
+                    {% if custo.cliente %}
+                        {{ custo.cliente.razao_social }}
+                    {% else %}
+                        Geral
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="/financeiro/custos/editar/{{ custo.id }}">Editar</a>
+                    </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">Nenhum custo registrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

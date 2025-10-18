@@ -45,10 +45,12 @@
         </div>
 
         <div>
-            <label for="prioridade">Prioridade (1 - Alta, 5 - Baixa):</label>
+            <label for="prioridade">Prioridade:</label>
             <select id="prioridade" name="prioridade" required>
-                {% for p in prioridades %}
-                    <option value="{{ p }}" {% if p == chamado.prioridade %}selected{% endif %}>{{ p }}</option>
+                {% for key, value in prioridades.items() %}
+                    <option value="{{ key }}" {% if key == chamado.prioridade %}selected{% endif %}>
+                        {{ value }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
